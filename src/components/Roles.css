@@ -1,0 +1,85 @@
+.roles {
+  background: var(--bg-light);
+}
+
+.roles-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.role-card {
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.role-card:hover {
+  border-color: var(--primary);
+}
+
+.role-icon {
+  font-size: 4rem;
+  margin-bottom: 24px;
+  display: inline-block;
+}
+
+.role-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.role-description {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.role-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.role-features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.role-features li:last-child {
+  border-bottom: none;
+}
+
+.check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--success);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .role-icon {
+    font-size: 3rem;
+  }
+  
+  .role-title {
+    font-size: 1.5rem;
+  }
+  
+  .role-description {
+    font-size: 0.9375rem;
+  }
+}
