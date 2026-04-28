@@ -1,7 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Hero.css';
 
 const Hero = () => {
+  const [apkInfo, setApkInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Get backend URL from environment variable or use default
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+  
+  useEffect(() => {
+    // Fetch APK info from backend
+    fetch(`${BACKEND_URL}/api/download/apk/info`)
+      .then(res => res.json())
+      .then(data => {
+        setApkInfo(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch APK info:', err);
+        setLoading(false);
+      });
+  }, [BACKEND_URL]);
+  
+  const handleDownload = () => {
+    window.location.href = `${BACKEND_URL}/api/download/apk`;
+  };
+  
   return (
     <section className="hero">
       <div className="hero-background">
@@ -24,10 +48,14 @@ const Hero = () => {
           </p>
           
           <div className="hero-buttons">
-            <a href="http://YOUR_SERVER_URL:3000/api/download/apk" className="btn btn-primary">
+            <button 
+              onClick={handleDownload} 
+              className="btn btn-primary"
+              disabled={loading || !apkInfo?.available}
+            >
               <span>📱</span>
-              Download App
-            </a>
+              {loading ? 'Loading...' : apkInfo?.available ? `Download App ${apkInfo.size ? `(${apkInfo.size})` : ''}` : 'App Not Available'}
+            </button>
             <a href="#features" className="btn btn-secondary">
               Learn More
             </a>
