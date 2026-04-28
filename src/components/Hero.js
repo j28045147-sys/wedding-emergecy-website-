@@ -6,15 +6,25 @@ const Hero = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Get backend URL from environment variable or use default
+  // Use Vercel serverless function as proxy to avoid mixed content issues
+  // In production (Vercel), use /api/* endpoints which proxy to backend
+  // In development, use backend directly
+  const isDevelopment = process.env.NODE_ENV === 'development';
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
   
+  // Use proxy in production, direct backend in development
+  const API_BASE = isDevelopment ? BACKEND_URL : '';
+  const APK_INFO_URL = isDevelopment ? `${BACKEND_URL}/api/download/apk/info` : '/api/download-info';
+  const APK_DOWNLOAD_URL = isDevelopment ? `${BACKEND_URL}/api/download/apk` : '/api/download-apk';
+  
   useEffect(() => {
+    console.log('🔍 [Hero] Environment:', process.env.NODE_ENV);
     console.log('🔍 [Hero] Backend URL:', BACKEND_URL);
-    console.log('🔍 [Hero] Fetching APK info from:', `${BACKEND_URL}/api/download/apk/info`);
+    console.log('🔍 [Hero] Using proxy:', !isDevelopment);
+    console.log('🔍 [Hero] Fetching APK info from:', APK_INFO_URL);
     
-    // Fetch APK info from backend
-    fetch(`${BACKEND_URL}/api/download/apk/info`)
+    // Fetch APK info from backend (via proxy in production)
+    fetch(APK_INFO_URL)
       .then(res => {
         console.log('📥 [Hero] Response status:', res.status);
         if (!res.ok) {
@@ -38,10 +48,11 @@ const Hero = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [BACKEND_URL]);
+  }, [APK_INFO_URL, BACKEND_URL, isDevelopment]);
   
   const handleDownload = () => {
-    window.location.href = `${BACKEND_URL}/api/download/apk`;
+    console.log('📥 [Hero] Downloading from:', APK_DOWNLOAD_URL);
+    window.location.href = APK_DOWNLOAD_URL;
   };
   
   return (
