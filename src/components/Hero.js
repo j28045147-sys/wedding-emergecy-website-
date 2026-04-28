@@ -4,20 +4,38 @@ import './Hero.css';
 const Hero = () => {
   const [apkInfo, setApkInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // Get backend URL from environment variable or use default
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
   
   useEffect(() => {
+    console.log('🔍 [Hero] Backend URL:', BACKEND_URL);
+    console.log('🔍 [Hero] Fetching APK info from:', `${BACKEND_URL}/api/download/apk/info`);
+    
     // Fetch APK info from backend
     fetch(`${BACKEND_URL}/api/download/apk/info`)
-      .then(res => res.json())
+      .then(res => {
+        console.log('📥 [Hero] Response status:', res.status);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        return res.json();
+      })
       .then(data => {
+        console.log('✅ [Hero] APK info received:', data);
         setApkInfo(data);
         setLoading(false);
+        setError(null);
       })
       .catch(err => {
-        console.error('Failed to fetch APK info:', err);
+        console.error('❌ [Hero] Failed to fetch APK info:', err);
+        console.error('❌ [Hero] Error details:', {
+          message: err.message,
+          name: err.name,
+          stack: err.stack
+        });
+        setError(err.message);
         setLoading(false);
       });
   }, [BACKEND_URL]);
@@ -52,14 +70,27 @@ const Hero = () => {
               onClick={handleDownload} 
               className="btn btn-primary"
               disabled={loading || !apkInfo?.available}
+              title={error ? `Error: ${error}` : ''}
             >
               <span>📱</span>
-              {loading ? 'Loading...' : apkInfo?.available ? `Download App ${apkInfo.size ? `(${apkInfo.size})` : ''}` : 'App Not Available'}
+              {loading ? 'Loading...' : error ? `Error: ${error.substring(0, 30)}...` : apkInfo?.available ? `Download App ${apkInfo.size ? `(${apkInfo.size})` : ''}` : 'App Not Available'}
             </button>
             <a href="#features" className="btn btn-secondary">
               Learn More
             </a>
           </div>
+          
+          {/* Debug info - remove after testing */}
+          {process.env.NODE_ENV === 'development' && (
+            <div style={{ marginTop: '20px', padding: '10px', background: '#f0f0f0', borderRadius: '5px', fontSize: '12px' }}>
+              <strong>Debug Info:</strong><br/>
+              Backend URL: {BACKEND_URL}<br/>
+              Loading: {loading ? 'Yes' : 'No'}<br/>
+              Error: {error || 'None'}<br/>
+              APK Available: {apkInfo?.available ? 'Yes' : 'No'}<br/>
+              APK Size: {apkInfo?.size || 'N/A'}
+            </div>
+          )}
           
           <div className="hero-stats">
             <div className="stat">
