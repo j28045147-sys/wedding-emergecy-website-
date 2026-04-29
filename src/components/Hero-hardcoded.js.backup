@@ -1,3 +1,6 @@
+// HARDCODED VERSION - Use this if environment detection fails
+// To use: rename this file to Hero.js
+
 import React, { useState, useEffect } from 'react';
 import './Hero.css';
 
@@ -6,25 +9,15 @@ const Hero = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Use Vercel serverless function as proxy to avoid mixed content issues
-  // Check if we're on Vercel (hostname contains vercel.app) or localhost
-  const isVercel = typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
-  const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
-  
-  // ALWAYS use proxy on Vercel to avoid mixed content, use direct backend only on localhost
-  const APK_INFO_URL = (isVercel || !isLocalhost) ? '/api/download-info' : `${BACKEND_URL}/api/download/apk/info`;
-  const APK_DOWNLOAD_URL = (isVercel || !isLocalhost) ? '/api/download-apk' : `${BACKEND_URL}/api/download/apk`;
+  // HARDCODED - Always use Vercel proxy
+  const APK_INFO_URL = '/api/download-info';
+  const APK_DOWNLOAD_URL = '/api/download-apk';
   
   useEffect(() => {
-    console.log('🔍 [Hero] Hostname:', typeof window !== 'undefined' ? window.location.hostname : 'SSR');
-    console.log('🔍 [Hero] Is Vercel:', isVercel);
-    console.log('🔍 [Hero] Is Localhost:', isLocalhost);
-    console.log('🔍 [Hero] Backend URL:', BACKEND_URL);
-    console.log('🔍 [Hero] Using proxy:', isVercel || !isLocalhost);
+    console.log('🔍 [Hero] Using HARDCODED proxy URLs');
     console.log('🔍 [Hero] Fetching APK info from:', APK_INFO_URL);
     
-    // Fetch APK info from backend (via proxy in production)
+    // Fetch APK info via Vercel proxy
     fetch(APK_INFO_URL)
       .then(res => {
         console.log('📥 [Hero] Response status:', res.status);
@@ -41,15 +34,10 @@ const Hero = () => {
       })
       .catch(err => {
         console.error('❌ [Hero] Failed to fetch APK info:', err);
-        console.error('❌ [Hero] Error details:', {
-          message: err.message,
-          name: err.name,
-          stack: err.stack
-        });
         setError(err.message);
         setLoading(false);
       });
-  }, [APK_INFO_URL, BACKEND_URL, isVercel, isLocalhost]);
+  }, [APK_INFO_URL]);
   
   const handleDownload = () => {
     console.log('📥 [Hero] Downloading from:', APK_DOWNLOAD_URL);
@@ -91,18 +79,6 @@ const Hero = () => {
               Learn More
             </a>
           </div>
-          
-          {/* Debug info - remove after testing */}
-          {process.env.NODE_ENV === 'development' && (
-            <div style={{ marginTop: '20px', padding: '10px', background: '#f0f0f0', borderRadius: '5px', fontSize: '12px' }}>
-              <strong>Debug Info:</strong><br/>
-              Backend URL: {BACKEND_URL}<br/>
-              Loading: {loading ? 'Yes' : 'No'}<br/>
-              Error: {error || 'None'}<br/>
-              APK Available: {apkInfo?.available ? 'Yes' : 'No'}<br/>
-              APK Size: {apkInfo?.size || 'N/A'}
-            </div>
-          )}
           
           <div className="hero-stats">
             <div className="stat">

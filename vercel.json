@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "framework": "create-react-app",
+  "env": {
+    "REACT_APP_BACKEND_URL": "http://51.20.89.101"
+  },
+  "build": {
+    "env": {
+      "REACT_APP_BACKEND_URL": "http://51.20.89.101"
+    }
+  }
+}
